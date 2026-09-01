@@ -1,30 +1,43 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import type { Mesh } from 'three';
+import { Text } from '@react-three/drei';
+import type { Group, Mesh } from 'three';
 
 const SPACING = 1.2;
+const LABEL_GAP = 0.3;
 
 interface SortBarProps {
   index: number;
+  value: number;
   targetHeight: number;
   color: string;
 }
 
-export function SortBar({ index, targetHeight, color }: SortBarProps) {
+export function SortBar({ index, value, targetHeight, color }: SortBarProps) {
   const meshRef = useRef<Mesh>(null);
+  const labelRef = useRef<Group>(null);
 
   useFrame((_, delta) => {
-    if (!meshRef.current) return;
+    if (!meshRef.current || !labelRef.current) return;
     const factor = Math.min(delta * 6, 1);
     const current = meshRef.current.scale.y;
-    meshRef.current.scale.y = current + (targetHeight - current) * factor;
-    meshRef.current.position.y = meshRef.current.scale.y / 2;
+    const next = current + (targetHeight - current) * factor;
+    meshRef.current.scale.y = next;
+    meshRef.current.position.y = next / 2;
+    labelRef.current.position.y = next + LABEL_GAP;
   });
 
   return (
-    <mesh ref={meshRef} position={[index * SPACING, 0, 0]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={color} />
-    </mesh>
+    <group position={[index * SPACING, 0, 0]}>
+      <mesh ref={meshRef}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      <group ref={labelRef}>
+        <Text fontSize={0.32} color="white" anchorX="center" anchorY="bottom">
+          {value}
+        </Text>
+      </group>
+    </group>
   );
 }

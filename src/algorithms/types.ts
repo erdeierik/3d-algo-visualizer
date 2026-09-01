@@ -47,6 +47,8 @@ export interface ComplexityInfo {
 export interface AlgorithmDefinition {
   id: string;
   displayName: string;
+  category: 'sorting' | 'tree';
+  requiresTarget: boolean;
   pseudocode: string[];
   statLabels: { comparisons: string; operations: string };
   complexity: ComplexityInfo;

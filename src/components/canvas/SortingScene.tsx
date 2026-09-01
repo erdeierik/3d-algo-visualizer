@@ -10,6 +10,8 @@ const COLORS = {
   sorted: '#48bb78',
 };
 
+const MAX_BAR_HEIGHT = 6;
+
 export function SortingScene() {
   const steps = usePlayerStore((s) => s.steps) as SortStep[];
   const currentStepIndex = usePlayerStore((s) => s.currentStepIndex);
@@ -27,6 +29,8 @@ export function SortingScene() {
 
   if (!step) return null;
 
+  const maxValue = Math.max(...step.array);
+
   return (
     <>
       {step.array.map((value, index) => {
@@ -38,7 +42,15 @@ export function SortingScene() {
           : sortedIndices.has(index) || step.kind === 'done'
             ? COLORS.sorted
             : COLORS.idle;
-        return <SortBar key={index} index={index} targetHeight={value} color={color} />;
+        return (
+          <SortBar
+            key={index}
+            index={index}
+            value={value}
+            targetHeight={(value / maxValue) * MAX_BAR_HEIGHT}
+            color={color}
+          />
+        );
       })}
     </>
   );

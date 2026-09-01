@@ -24,6 +24,8 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   {
     id: 'bubble-sort',
     displayName: 'Bubble Sort',
+    category: 'sorting',
+    requiresTarget: false,
     pseudocode: bubbleSortPseudocode,
     statLabels: { comparisons: 'Összehasonlítások', operations: 'Cserék' },
     complexity: {
@@ -35,6 +37,8 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   {
     id: 'selection-sort',
     displayName: 'Selection Sort',
+    category: 'sorting',
+    requiresTarget: false,
     pseudocode: selectionSortPseudocode,
     statLabels: { comparisons: 'Összehasonlítások', operations: 'Cserék' },
     complexity: {
@@ -46,6 +50,8 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   {
     id: 'insertion-sort',
     displayName: 'Insertion Sort',
+    category: 'sorting',
+    requiresTarget: false,
     pseudocode: insertionSortPseudocode,
     statLabels: { comparisons: 'Összehasonlítások', operations: 'Eltolások' },
     complexity: {
@@ -57,6 +63,8 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   {
     id: 'bst-insert',
     displayName: 'BST beszúrás (Insert)',
+    category: 'tree',
+    requiresTarget: false,
     pseudocode: bstInsertPseudocode,
     statLabels: { comparisons: 'Összehasonlítások', operations: 'Beszúrások' },
     complexity: {
@@ -68,6 +76,8 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   {
     id: 'bst-search',
     displayName: 'BST keresés (Search)',
+    category: 'tree',
+    requiresTarget: true,
     pseudocode: bstSearchPseudocode,
     statLabels: { comparisons: 'Összehasonlítások', operations: 'Módosítások' },
     complexity: {
@@ -82,6 +92,8 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   {
     id: 'bst-delete',
     displayName: 'BST törlés (Delete)',
+    category: 'tree',
+    requiresTarget: true,
     pseudocode: bstDeletePseudocode,
     statLabels: { comparisons: 'Összehasonlítások', operations: 'Pointer-módosítások' },
     complexity: {
@@ -96,6 +108,8 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   {
     id: 'bst-traversal-inorder',
     displayName: 'BST bejárás (Inorder)',
+    category: 'tree',
+    requiresTarget: false,
     pseudocode: bstTraversalPseudocode.inorder,
     statLabels: { comparisons: 'Összehasonlítások', operations: 'Meglátogatott csomópontok' },
     complexity: {
@@ -107,6 +121,8 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   {
     id: 'bst-traversal-preorder',
     displayName: 'BST bejárás (Preorder)',
+    category: 'tree',
+    requiresTarget: false,
     pseudocode: bstTraversalPseudocode.preorder,
     statLabels: { comparisons: 'Összehasonlítások', operations: 'Meglátogatott csomópontok' },
     complexity: {
@@ -118,6 +134,8 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   {
     id: 'bst-traversal-postorder',
     displayName: 'BST bejárás (Postorder)',
+    category: 'tree',
+    requiresTarget: false,
     pseudocode: bstTraversalPseudocode.postorder,
     statLabels: { comparisons: 'Összehasonlítások', operations: 'Meglátogatott csomópontok' },
     complexity: {
