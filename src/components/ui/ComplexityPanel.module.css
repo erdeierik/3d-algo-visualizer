@@ -1,0 +1,25 @@
+.heading {
+  margin: 0 0 8px;
+  font-size: var(--label-size);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+}
+
+.table {
+  border-collapse: collapse;
+  font-size: 19px;
+}
+
+.table th {
+  text-align: left;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  padding: 3px 22px 3px 0;
+}
+
+.table td {
+  text-align: right;
+  color: var(--color-text-primary);
+  padding: 3px 0;
+}

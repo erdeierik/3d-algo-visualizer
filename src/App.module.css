@@ -1,0 +1,57 @@
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.zoneTopLeft {
+  position: absolute;
+  top: 30px;
+  left: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 27px;
+}
+
+.zoneTopRight {
+  position: absolute;
+  top: 30px;
+  right: 36px;
+  width: 450px;
+}
+
+.zoneBottomLeft {
+  position: absolute;
+  bottom: 30px;
+  left: 36px;
+  width: 390px;
+}
+
+.zoneBottomCenter {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.zoneBottomRight {
+  position: absolute;
+  bottom: 36px;
+  right: 36px;
+}
+
+.resetView {
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.resetView:hover {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+}

@@ -1,0 +1,40 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 21px;
+}
+
+.button {
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 19px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+
+.button:disabled {
+  color: var(--color-idle);
+  cursor: default;
+}
+
+.button:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.speed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--label-size);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.slider {
+  composes: slider from '../../styles/slider.module.css';
+  width: 180px;
+}

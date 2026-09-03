@@ -1,4 +1,5 @@
 import { usePlayerStore } from '../../store/playerStore';
+import styles from './PlaybackControls.module.css';
 
 export function PlaybackControls() {
   const isPlaying = usePlayerStore((s) => s.isPlaying);
@@ -10,26 +11,28 @@ export function PlaybackControls() {
   const atEnd = stepsLength === 0 || currentStepIndex >= stepsLength - 1;
 
   return (
-    <div>
-      <button type="button" onClick={() => usePlayerStore.getState().stepBack()} disabled={atStart}>
+    <div className={styles.row}>
+      <button type="button" className={styles.button} onClick={() => usePlayerStore.getState().stepBack()} disabled={atStart}>
         ⏮
       </button>
       <button
         type="button"
+        className={styles.button}
         onClick={() => (isPlaying ? usePlayerStore.getState().pause() : usePlayerStore.getState().play())}
         disabled={atEnd && !isPlaying}
       >
         {isPlaying ? 'Pause' : 'Play'}
       </button>
-      <button type="button" onClick={() => usePlayerStore.getState().stepForward()} disabled={atEnd}>
+      <button type="button" className={styles.button} onClick={() => usePlayerStore.getState().stepForward()} disabled={atEnd}>
         ⏭
       </button>
-      <button type="button" onClick={() => usePlayerStore.getState().reset()}>
+      <button type="button" className={styles.button} onClick={() => usePlayerStore.getState().reset()}>
         Reset
       </button>
-      <label>
-        Speed: {speed}/s
+      <label className={styles.speed}>
+        Speed
         <input
+          className={styles.slider}
           type="range"
           min={0.5}
           max={10}
@@ -37,6 +40,7 @@ export function PlaybackControls() {
           value={speed}
           onChange={(e) => usePlayerStore.getState().setSpeed(Number(e.target.value))}
         />
+        <span>{speed}×</span>
       </label>
     </div>
   );

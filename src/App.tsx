@@ -9,7 +9,10 @@ import { PlaybackControls } from './components/ui/PlaybackControls';
 import { PseudocodePanel } from './components/ui/PseudocodePanel';
 import { StatsPanel } from './components/ui/StatsPanel';
 import { ComplexityPanel } from './components/ui/ComplexityPanel';
+import { TabPanel } from './components/ui/TabPanel';
 import { useSessionStore, useCurrentDefinition } from './store/sessionStore';
+import panel from './styles/panel.module.css';
+import styles from './App.module.css';
 
 function Scene() {
   return useCurrentDefinition().category === 'tree' ? <TreeScene /> : <SortingScene />;
@@ -24,7 +27,7 @@ function App() {
   }, []);
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+    <div className={styles.stage}>
       <Canvas camera={{ position: [0, 4, 10], fov: 50 }}>
         <color attach="background" args={['#0f1115']} />
         <ambientLight intensity={0.6} />
@@ -33,24 +36,31 @@ function App() {
         <Scene />
       </Canvas>
 
-      <div style={{ position: 'absolute', top: 12, left: 12 }}>
+      <div className={styles.zoneTopLeft}>
         <AlgorithmSelector />
         <DataControls />
         <ComplexityPanel />
       </div>
-      <div style={{ position: 'absolute', top: 12, right: 12, maxWidth: 320 }}>
+
+      <div className={`${styles.zoneTopRight} ${panel.panel}`}>
         <PseudocodePanel />
         <StatsPanel />
       </div>
-      <div style={{ position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)' }}>
+
+      <div className={styles.zoneBottomLeft}>
+        <TabPanel />
+      </div>
+
+      <div className={styles.zoneBottomCenter}>
         <PlaybackControls />
       </div>
+
       <button
         type="button"
+        className={`${styles.zoneBottomRight} ${styles.resetView}`}
         onClick={() => cameraRigRef.current?.reset()}
-        style={{ position: 'absolute', bottom: 12, right: 12 }}
       >
-        Reset View
+        ◇ Reset View
       </button>
     </div>
   );

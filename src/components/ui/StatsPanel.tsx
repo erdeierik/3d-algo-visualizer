@@ -1,5 +1,6 @@
 import { usePlayerStore } from '../../store/playerStore';
 import { useCurrentDefinition } from '../../store/sessionStore';
+import styles from './StatsPanel.module.css';
 
 export function StatsPanel() {
   const step = usePlayerStore((s) => s.steps[s.currentStepIndex]);
@@ -7,11 +8,15 @@ export function StatsPanel() {
   if (!step) return null;
 
   return (
-    <dl>
-      <dt>{def.statLabels.comparisons}</dt>
-      <dd>{step.stats.comparisons}</dd>
-      <dt>{def.statLabels.operations}</dt>
-      <dd>{step.stats.operations}</dd>
+    <dl className={styles.stats}>
+      <div className={styles.stat}>
+        <dt>{def.statLabels.comparisons}</dt>
+        <dd>{step.stats.comparisons}</dd>
+      </div>
+      <div className={styles.stat}>
+        <dt>{def.statLabels.operations}</dt>
+        <dd>{step.stats.operations}</dd>
+      </div>
     </dl>
   );
 }

@@ -1,0 +1,57 @@
+.panel {
+  composes: panel from '../../styles/panel.module.css';
+  width: 100%;
+}
+
+.tabRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.tab,
+.tabActive {
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.tabActive {
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-text-primary);
+}
+
+.close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.collapsedTab {
+  composes: panel from '../../styles/panel.module.css';
+  border: none;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  font-size: var(--label-size);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.prose {
+  font-family: var(--font-sans);
+  font-size: var(--prose-size);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
