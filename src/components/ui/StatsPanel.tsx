@@ -13,10 +13,18 @@ export function StatsPanel() {
         <dt>{def.statLabels.comparisons}</dt>
         <dd>{step.stats.comparisons}</dd>
       </div>
-      <div className={styles.stat}>
-        <dt>{def.statLabels.operations}</dt>
-        <dd>{step.stats.operations}</dd>
-      </div>
+      {def.statLabels.operations && (
+        <div className={styles.stat}>
+          <dt>{def.statLabels.operations}</dt>
+          <dd>{step.stats.operations}</dd>
+        </div>
+      )}
+      {(step.kind === 'found' || step.kind === 'not-found') && (
+        <div className={styles.stat}>
+          <dt>Result</dt>
+          <dd>{step.kind === 'found' ? 'Found' : 'Not found'}</dd>
+        </div>
+      )}
     </dl>
   );
 }

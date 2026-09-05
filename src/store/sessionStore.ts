@@ -18,13 +18,11 @@ function randomUniqueValues(count: number, max = 99): number[] {
   return Array.from(values);
 }
 
-function buildInput(def: AlgorithmDefinition, data: number[]): unknown {
-  if (!def.requiresTarget) return data;
-  const target =
-    Math.random() < 0.7
-      ? data[Math.floor(Math.random() * data.length)]
-      : Math.floor(Math.random() * 99) + 1;
-  return { insertionOrder: data, target };
+function pickTarget(data: number[]): number {
+  // 70%: a fában biztosan meglévő érték, 30%: valószínűleg hiányzó (a not-found ág is látszódjon)
+  return Math.random() < 0.7
+    ? data[Math.floor(Math.random() * data.length)]
+    : Math.floor(Math.random() * 99) + 1;
 }
 
 function getDefinition(id: string): AlgorithmDefinition {
@@ -34,6 +32,7 @@ function getDefinition(id: string): AlgorithmDefinition {
 interface SessionState {
   selectedId: string;
   dataSize: number;
+  target: number | null;
   selectAlgorithm: (id: string) => void;
   setDataSize: (size: number) => void;
   generateData: () => void;
@@ -42,6 +41,7 @@ interface SessionState {
 export const useSessionStore = create<SessionState>((set, get) => ({
   selectedId: algorithmRegistry[0].id,
   dataSize: 9,
+  target: null,
 
   selectAlgorithm: (id) => {
     const [min, max] = SIZE_RANGE[getDefinition(id).category];
@@ -55,7 +55,11 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     const { selectedId, dataSize } = get();
     const def = getDefinition(selectedId);
     const data = def.category === 'tree' ? randomUniqueValues(dataSize) : randomValues(dataSize);
-    usePlayerStore.getState().loadSteps(def.run(buildInput(def, data)));
+    const target = def.requiresTarget ? pickTarget(data) : null;
+    set({ target });
+    usePlayerStore
+      .getState()
+      .loadSteps(def.run(def.requiresTarget ? { insertionOrder: data, target } : data));
   },
 }));
 

@@ -3,6 +3,7 @@ import styles from './DataControls.module.css';
 
 export function DataControls() {
   const dataSize = useSessionStore((s) => s.dataSize);
+  const target = useSessionStore((s) => s.target);
   const [min, max] = SIZE_RANGE[useCurrentDefinition().category];
 
   return (
@@ -18,7 +19,15 @@ export function DataControls() {
         max={max}
         value={dataSize}
         onChange={(e) => useSessionStore.getState().setDataSize(Number(e.target.value))}
+        onPointerUp={() => useSessionStore.getState().generateData()}
+        onKeyUp={() => useSessionStore.getState().generateData()}
       />
+      {target !== null && (
+        <div className={styles.targetRow}>
+          <span>Target</span>
+          <span>{target}</span>
+        </div>
+      )}
       <button type="button" className={styles.generate} onClick={() => useSessionStore.getState().generateData()}>
         Generate new data
       </button>

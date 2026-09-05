@@ -11,6 +11,7 @@ import { StatsPanel } from './components/ui/StatsPanel';
 import { ComplexityPanel } from './components/ui/ComplexityPanel';
 import { TabPanel } from './components/ui/TabPanel';
 import { useSessionStore, useCurrentDefinition } from './store/sessionStore';
+import { usePlayerStore } from './store/playerStore';
 import panel from './styles/panel.module.css';
 import styles from './App.module.css';
 
@@ -20,7 +21,8 @@ function Scene() {
 
 function App() {
   const cameraRigRef = useRef<CameraRigHandle>(null);
-  const selectedId = useSessionStore((s) => s.selectedId);
+  // a loadSteps mindig új tömböt tesz be, így minden adatgenerálásra újrakeretezünk
+  const steps = usePlayerStore((s) => s.steps);
 
   useEffect(() => {
     useSessionStore.getState().generateData();
@@ -32,7 +34,7 @@ function App() {
         <color attach="background" args={['#0f1115']} />
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 8, 5]} intensity={1.2} />
-        <CameraRig ref={cameraRigRef} fitKey={selectedId} />
+        <CameraRig ref={cameraRigRef} fitKey={steps} />
         <Scene />
       </Canvas>
 

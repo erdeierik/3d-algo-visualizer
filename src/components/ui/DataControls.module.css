@@ -12,6 +12,11 @@
   color: var(--color-text-primary);
 }
 
+.targetRow {
+  composes: label;
+  margin-top: 14px;
+}
+
 .slider {
   composes: slider from '../../styles/slider.module.css';
   width: 330px;

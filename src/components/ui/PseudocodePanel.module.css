@@ -13,22 +13,27 @@
   counter-reset: line;
   font-size: 19px;
   line-height: 1.7;
-  white-space: pre;
 }
 
 .code li {
   counter-increment: line;
   color: var(--color-text-muted);
+  transition: color 180ms ease;
+  /* a hosszú sor a kód-oszlopba tördelődik, nem lóg ki a panelből */
+  white-space: pre-wrap;
+  padding-left: 3ch;
+  text-indent: -3ch;
 }
 
 .code li::before {
-  content: counter(line) '  ';
+  content: counter(line);
+  display: inline-block;
+  width: 2ch;
+  margin-right: 1ch;
+  text-align: right;
   color: var(--color-text-secondary);
 }
 
-.active {
-  color: #ffffff;
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.code li.active {
+  color: var(--color-active);
 }

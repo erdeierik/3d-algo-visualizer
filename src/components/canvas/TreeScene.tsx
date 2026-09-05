@@ -5,6 +5,19 @@ import { computeTreeLayout } from '../../algorithms/tree/layout';
 import { TreeNode3D } from './TreeNode3D';
 import type { TreeStep } from '../../algorithms/types';
 
+const IDLE_COLOR = '#4a5568';
+
+const ACTIVE_COLOR: Record<TreeStep['kind'], string> = {
+  compare: '#ecc94b',
+  visit: '#ecc94b',
+  insert: '#48bb78',
+  found: '#48bb78',
+  delete: '#f56565',
+  'rebalance-pointer': '#f56565',
+  'not-found': IDLE_COLOR,
+  done: IDLE_COLOR,
+};
+
 export function TreeScene() {
   const steps = usePlayerStore((s) => s.steps) as TreeStep[];
   const currentStepIndex = usePlayerStore((s) => s.currentStepIndex);
@@ -25,7 +38,7 @@ export function TreeScene() {
             value={node.value}
             targetX={pos.x}
             targetY={pos.y}
-            color={isActive ? '#ecc94b' : '#4a5568'}
+            color={isActive ? ACTIVE_COLOR[step.kind] : IDLE_COLOR}
           />
         );
       })}

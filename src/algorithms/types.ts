@@ -50,7 +50,7 @@ export interface AlgorithmDefinition {
   category: 'sorting' | 'tree';
   requiresTarget: boolean;
   pseudocode: string[];
-  statLabels: { comparisons: string; operations: string };
+  statLabels: { comparisons: string; operations?: string };
   complexity: ComplexityInfo;
   run: (input: unknown) => Step[];
 }

@@ -13,7 +13,7 @@ export const selectionSortPseudocode = [
   '  for j from i+1 to n-1', // 2
   '    if array[j] < array[minIndex]', // 3
   '      minIndex = j', // 4
-  '  if minIndex != i: swap(array[i], array[minIndex])', // 5
+  '  if minIndex != i: swap i, minIndex', // 5
   '  mark array[i] as sorted', // 6
   'done', // 7
 ];
