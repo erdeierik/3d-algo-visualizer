@@ -7,7 +7,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-hairline);
 }
 
 .tab,
@@ -21,11 +22,19 @@
   padding: 6px 12px;
   cursor: pointer;
   color: var(--color-text-secondary);
+  /* a fülsor hajszálvonalára ül rá, nem alá */
+  margin-bottom: -1px;
+  border-bottom: 1px solid transparent;
+}
+
+.tab:first-child,
+.tabActive:first-child {
+  padding-left: 0;
 }
 
 .tabActive {
   color: var(--color-text-primary);
-  border-bottom: 1px solid var(--color-text-primary);
+  border-bottom-color: var(--color-text-primary);
 }
 
 .close {
@@ -54,4 +63,25 @@
   line-height: 1.5;
   color: var(--color-text-secondary);
   margin: 0;
+}
+
+.scroll {
+  max-height: 300px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 10px;
+}
+
+.block + .block {
+  margin-top: 18px;
+}
+
+.blockLabel {
+  margin: 0 0 5px;
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-primary);
 }

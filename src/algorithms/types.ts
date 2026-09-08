@@ -44,6 +44,12 @@ export interface ComplexityInfo {
   space: string;
 }
 
+export interface AlgorithmDescription {
+  howItWorks: string;
+  whenToUse: string;
+  watchOut: string;
+}
+
 export interface AlgorithmDefinition {
   id: string;
   displayName: string;
@@ -52,5 +58,6 @@ export interface AlgorithmDefinition {
   pseudocode: string[];
   statLabels: { comparisons: string; operations?: string };
   complexity: ComplexityInfo;
+  description: AlgorithmDescription;
   run: (input: unknown) => Step[];
 }

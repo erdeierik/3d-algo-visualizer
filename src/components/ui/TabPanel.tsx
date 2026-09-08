@@ -1,13 +1,21 @@
 import { useState } from 'react';
+import { DescriptionTab } from './DescriptionTab';
+import { SettingsTab } from './SettingsTab';
 import styles from './TabPanel.module.css';
 
 type TabId = 'description' | 'theme' | 'settings';
 
-const TABS: { id: TabId; label: string; placeholder: string }[] = [
-  { id: 'description', label: 'Description', placeholder: 'Description coming soon.' },
-  { id: 'theme', label: 'Theme', placeholder: 'Theme options coming soon.' },
-  { id: 'settings', label: 'Settings', placeholder: 'Settings coming soon.' },
+const TABS: { id: TabId; label: string }[] = [
+  { id: 'description', label: 'Description' },
+  { id: 'theme', label: 'Theme' },
+  { id: 'settings', label: 'Settings' },
 ];
+
+function TabBody({ id }: { id: TabId }) {
+  if (id === 'description') return <DescriptionTab />;
+  if (id === 'theme') return <p className={styles.prose}>Theme options coming soon.</p>;
+  return <SettingsTab />;
+}
 
 export function TabPanel() {
   const [activeTab, setActiveTab] = useState<TabId>('description');
@@ -39,7 +47,7 @@ export function TabPanel() {
           ×
         </button>
       </div>
-      <p className={styles.prose}>{active.placeholder}</p>
+      <TabBody id={activeTab} />
     </div>
   );
 }

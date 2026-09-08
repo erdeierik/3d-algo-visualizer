@@ -1,4 +1,5 @@
 import { usePlayerStore } from '../../store/playerStore';
+import { unlockAudio } from '../../audio/engine';
 import styles from './PlaybackControls.module.css';
 
 export function PlaybackControls() {
@@ -18,12 +19,24 @@ export function PlaybackControls() {
       <button
         type="button"
         className={styles.button}
-        onClick={() => (isPlaying ? usePlayerStore.getState().pause() : usePlayerStore.getState().play())}
+        onClick={() => {
+          unlockAudio();
+          if (isPlaying) usePlayerStore.getState().pause();
+          else usePlayerStore.getState().play();
+        }}
         disabled={atEnd && !isPlaying}
       >
         {isPlaying ? 'Pause' : 'Play'}
       </button>
-      <button type="button" className={styles.button} onClick={() => usePlayerStore.getState().stepForward()} disabled={atEnd}>
+      <button
+        type="button"
+        className={styles.button}
+        onClick={() => {
+          unlockAudio();
+          usePlayerStore.getState().stepForward();
+        }}
+        disabled={atEnd}
+      >
         ⏭
       </button>
       <button type="button" className={styles.button} onClick={() => usePlayerStore.getState().reset()}>

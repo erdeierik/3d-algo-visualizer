@@ -12,6 +12,7 @@ import { ComplexityPanel } from './components/ui/ComplexityPanel';
 import { TabPanel } from './components/ui/TabPanel';
 import { useSessionStore, useCurrentDefinition } from './store/sessionStore';
 import { usePlayerStore } from './store/playerStore';
+import { useStepSound } from './audio/useStepSound';
 import panel from './styles/panel.module.css';
 import styles from './App.module.css';
 
@@ -23,6 +24,8 @@ function App() {
   const cameraRigRef = useRef<CameraRigHandle>(null);
   // a loadSteps mindig új tömböt tesz be, így minden adatgenerálásra újrakeretezünk
   const steps = usePlayerStore((s) => s.steps);
+
+  useStepSound();
 
   useEffect(() => {
     useSessionStore.getState().generateData();
