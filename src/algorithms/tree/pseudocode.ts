@@ -3,10 +3,10 @@ export const bstInsertPseudocode = [
   'else: current = root', // 1
   '  while true:', // 2
   '    if value < current.value:', // 3
-  '      if left is null: insert', // 4
+  '      if current.left is null: insert', // 4
   '      else: go left', // 5
   '    else:', // 6
-  '      if right is null: insert', // 7
+  '      if current.right is null: insert', // 7
   '      else: go right', // 8
   'done', // 9
 ];
@@ -14,17 +14,17 @@ export const bstInsertPseudocode = [
 export const bstSearchPseudocode = [
   'current = root', // 0
   'while current is not null:', // 1
-  '  if target == value: return found', // 2
-  '  else if target < value: go left', // 3
+  '  if target == current.value: return found', // 2
+  '  else if target < current.value: go left', // 3
   '  else: go right', // 4
   'return not found', // 5
 ];
 
 export const bstDeletePseudocode = [
   'current = root, parent = null', // 0
-  'while current and value != target:', // 1
+  'while current is not null and current.value != target:', // 1
   '  parent = current', // 2
-  '  if target < value: go left', // 3
+  '  if target < current.value: go left', // 3
   '  else: go right', // 4
   'if current is null: return not found', // 5
   'if current has two children:', // 6

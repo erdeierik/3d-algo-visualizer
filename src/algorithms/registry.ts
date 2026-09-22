@@ -29,16 +29,16 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
     pseudocode: bubbleSortPseudocode,
     statLabels: { comparisons: 'Comparisons', operations: 'Swaps' },
     complexity: {
-      time: { best: 'O(n)', average: 'O(n²)', worst: 'O(n²)' },
+      time: { best: 'O(n²)', average: 'O(n²)', worst: 'O(n²)' },
       space: 'O(1)',
     },
     description: {
       howItWorks:
         'Repeatedly walks the array, comparing each adjacent pair and swapping them when they are out of order. After each pass the largest remaining value has bubbled to its final position.',
       whenToUse:
-        'Only on small or nearly sorted arrays, where the early exit makes it competitive and its simplicity is worth more than its speed.',
+        'Mainly for teaching and for very small arrays. The code is short, and each step only touches two neighboring values.',
       watchOut:
-        'O(n²) comparisons in the average and worst case; on large inputs it is dramatically slower than the divide-and-conquer sorts.',
+        'This version has no early exit, so it runs every pass even on sorted input: O(n²) comparisons in every case. On large inputs it is far slower than O(n log n) divide-and-conquer sorts.',
     },
     run: (input) => bubbleSort(input as number[]),
   },
@@ -55,11 +55,11 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
     },
     description: {
       howItWorks:
-        'Scans the unsorted remainder of the array for the smallest value and swaps it into the current position. The sorted prefix on the left grows by exactly one element per pass.',
+        'Scans the unsorted remainder of the array for the smallest value and swaps it into the current position. The sorted prefix on the left grows by one element per pass.',
       whenToUse:
-        'When writing is expensive: it performs at most n−1 swaps, far fewer than bubble or insertion sort move data.',
+        'When writes are expensive. It does at most n−1 swaps, while bubble and insertion sort can move data O(n²) times.',
       watchOut:
-        'It has no early exit, so an already sorted array costs exactly as much as a random one — O(n²) comparisons in every case.',
+        'It never checks whether the array is already sorted, so it always scans the whole unsorted part. A sorted input costs as many comparisons as a random one, O(n²) in every case.',
     },
     run: (input) => selectionSort(input as number[]),
   },
@@ -78,9 +78,9 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
       howItWorks:
         'Takes the next element and shifts every larger value of the sorted prefix one place to the right, then writes the element into the gap. Everything left of the cursor is always sorted.',
       whenToUse:
-        'On small or nearly sorted arrays, and as the base case inside larger divide-and-conquer sorts — on almost sorted input it approaches O(n).',
+        'On small or nearly sorted arrays, where it runs in close to O(n) time. Divide-and-conquer sorts also use it as the base case for small subarrays.',
       watchOut:
-        'The shifts dominate the cost, not the comparisons: on reversed input every element has to travel across the whole prefix.',
+        'Every comparison that finds a larger value is followed by a shift, so the work grows with how far each element has to move. On reversed input every element travels across the whole sorted prefix.',
     },
     run: (input) => insertionSort(input as number[]),
   },
@@ -97,11 +97,11 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
     },
     description: {
       howItWorks:
-        'Starts at the root and compares the new value with each node, descending left when it is smaller and right when it is larger, until it reaches an empty slot — and links the new node there.',
+        'Starts at the root and compares the new value with each node on the way down, going left when it is smaller and right otherwise. When it reaches an empty slot, it links the new node there.',
       whenToUse:
-        'When a collection has to stay ordered while items keep arriving, and search, insert and delete should share the same root-to-leaf path.',
+        'When a collection has to stay ordered while new items keep arriving. Search, insert and delete all walk a single root-to-leaf path, so each costs O(height).',
       watchOut:
-        'Insertion order decides the shape. Sorted input degenerates the tree into a linked list where every operation costs O(n); self-balancing variants (AVL, red-black) exist to prevent exactly this.',
+        'The insertion order decides the shape of the tree. Sorted input turns it into a linked list, and every operation then costs O(n). Self-balancing trees such as AVL and red-black trees avoid this.',
     },
     run: (input) => bstInsert(input as number[]),
   },
@@ -120,9 +120,9 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
       howItWorks:
         'Compares the target with the current node and follows one branch: left when the target is smaller, right when it is larger. Every comparison discards an entire subtree.',
       whenToUse:
-        'Whenever the data already lives in a search tree — it needs no separate index and, unlike binary search over an array, it stays fast while the collection is modified.',
+        'When the data is already stored in a search tree. It needs no separate index, and unlike binary search over a sorted array, it stays fast while items are inserted and deleted.',
       watchOut:
-        'The cost is the height of the tree, not its size. On a degenerate tree the walk touches every node, and a failed search is never cheaper than a successful one.',
+        'The number of comparisons is at most the height of the tree. A balanced tree with n nodes is about log n tall, a degenerate one is n tall, and then a search may touch every node.',
     },
     run: (input) => {
       const { insertionOrder, target } = input as TreeSearchInput;
@@ -142,11 +142,11 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
     },
     description: {
       howItWorks:
-        'Finds the node, then handles three cases: a leaf is simply unlinked, a node with one child is replaced by that child, and a node with two children is overwritten by its in-order successor, which is then removed from its old place.',
+        'Finds the node, then handles three cases. A leaf is unlinked. A node with one child is replaced by that child. A node with two children takes the value of its in-order successor, and the successor is removed from its old place.',
       whenToUse:
-        'When elements have to leave an ordered collection without rebuilding it — the tree is still a valid BST after every removal.',
+        'When items have to be removed from an ordered collection without rebuilding it. The tree remains a valid BST after every deletion.',
       watchOut:
-        'The two-child case is what breaks naive implementations. Always taking the successor also skews the tree slowly over many deletions.',
+        'The two-child case is the easiest one to get wrong. Always using the successor also makes the tree lean to one side over many deletions.',
     },
     run: (input) => {
       const { insertionOrder, target } = input as TreeSearchInput;
@@ -155,7 +155,7 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
   },
   {
     id: 'bst-traversal-inorder',
-    displayName: 'BST Traversal (Inorder)',
+    displayName: 'BST Traversal (In-order)',
     category: 'tree',
     requiresTarget: false,
     pseudocode: bstTraversalPseudocode.inorder,
@@ -170,13 +170,13 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
       whenToUse:
         'When the elements are needed in sorted order: printing a sorted listing, verifying the BST invariant, or finding the k-th smallest value.',
       watchOut:
-        'The sorted output is a consequence of the BST property — on a general binary tree in-order carries no such meaning. Recursion depth equals the tree height.',
+        'The output is sorted only because of the BST property. On an ordinary binary tree, in-order gives no particular order. The recursion goes as deep as the tree is tall.',
     },
     run: (input) => bstTraverse(input as number[], 'inorder'),
   },
   {
     id: 'bst-traversal-preorder',
-    displayName: 'BST Traversal (Preorder)',
+    displayName: 'BST Traversal (Pre-order)',
     category: 'tree',
     requiresTarget: false,
     pseudocode: bstTraversalPseudocode.preorder,
@@ -189,15 +189,15 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
       howItWorks:
         'Visits the node first, then its left and right subtree, so every node is reported before any of its descendants.',
       whenToUse:
-        'When the structure itself matters: copying or serialising a tree, because re-inserting the values in pre-order rebuilds exactly the same shape.',
+        'When the shape of the tree matters, for example when copying or serializing it. Inserting the values into an empty BST in pre-order rebuilds the same tree.',
       watchOut:
-        'The output is not sorted, and it is easy to confuse with in-order — the only difference is where the visit sits relative to the two recursive calls.',
+        'The output is not sorted. It is easy to mix up with in-order, since the two differ only in where the visit comes relative to the two recursive calls.',
     },
     run: (input) => bstTraverse(input as number[], 'preorder'),
   },
   {
     id: 'bst-traversal-postorder',
-    displayName: 'BST Traversal (Postorder)',
+    displayName: 'BST Traversal (Post-order)',
     category: 'tree',
     requiresTarget: false,
     pseudocode: bstTraversalPseudocode.postorder,
@@ -212,7 +212,7 @@ export const algorithmRegistry: AlgorithmDefinition[] = [
       whenToUse:
         'When a node depends on its children: freeing or deleting a whole tree, computing subtree heights or sums, evaluating an expression tree.',
       watchOut:
-        'The root comes last, so nothing is reported until the deepest leaf has been reached — and, like pre-order, the output is not sorted.',
+        'The root is always reported last, and the first node reported is always a leaf. Like pre-order, the output is not sorted.',
     },
     run: (input) => bstTraverse(input as number[], 'postorder'),
   },

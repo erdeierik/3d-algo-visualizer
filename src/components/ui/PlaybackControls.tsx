@@ -40,7 +40,7 @@ export function PlaybackControls() {
         ⏭
       </button>
       <button type="button" className={styles.button} onClick={() => usePlayerStore.getState().reset()}>
-        Reset
+        Restart
       </button>
       <label className={styles.speed}>
         Speed
