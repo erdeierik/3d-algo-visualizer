@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DescriptionTab } from './DescriptionTab';
 import { SettingsTab } from './SettingsTab';
+import { ThemeTab } from './ThemeTab';
 import styles from './TabPanel.module.css';
 
 type TabId = 'description' | 'theme' | 'settings';
@@ -13,7 +14,7 @@ const TABS: { id: TabId; label: string }[] = [
 
 function TabBody({ id }: { id: TabId }) {
   if (id === 'description') return <DescriptionTab />;
-  if (id === 'theme') return <p className={styles.prose}>Theme options coming soon.</p>;
+  if (id === 'theme') return <ThemeTab />;
   return <SettingsTab />;
 }
 
