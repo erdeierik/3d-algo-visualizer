@@ -1,37 +1,47 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
-import type { Mesh } from 'three';
+import { Color, type Group, type MeshStandardMaterial } from 'three';
 import { useSettingsStore } from '../../store/settingsStore';
+import { useTheme } from '../../themes/registry';
+import type { Detail, VisualState } from '../../themes/types';
 
 interface TreeNode3DProps {
   value: number;
   targetX: number;
   targetY: number;
-  color: string;
+  state: VisualState;
+  detail: Detail;
 }
 
-export function TreeNode3D({ value, targetX, targetY, color }: TreeNode3DProps) {
-  const meshRef = useRef<Mesh>(null);
+export function TreeNode3D({ value, targetX, targetY, state, detail }: TreeNode3DProps) {
+  const theme = useTheme();
   const showLabels = useSettingsStore((s) => s.showLabels);
   const animate = useSettingsStore((s) => s.animate);
 
+  const groupRef = useRef<Group>(null);
+  const materialRef = useRef<MeshStandardMaterial>(null);
+
+  const target = useMemo(() => new Color(theme.palette[state]), [theme, state]);
+
   useFrame((_, delta) => {
-    if (!meshRef.current) return;
     const factor = animate ? Math.min(delta * 6, 1) : 1;
-    meshRef.current.position.x += (targetX - meshRef.current.position.x) * factor;
-    meshRef.current.position.y += (targetY - meshRef.current.position.y) * factor;
-  });
+    const group = groupRef.current;
+    if (group) {
+      group.position.x += (targetX - group.position.x) * factor;
+      group.position.y += (targetY - group.position.y) * factor;
+    }
+    materialRef.current?.color.copy(target);
+  }, -1);
 
   return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[0.4, 24, 24]} />
-      <meshStandardMaterial color={color} />
+    <group ref={groupRef}>
+      <theme.Node materialRef={materialRef} detail={detail} />
       {showLabels && (
-        <Text position={[0, 0, 0.5]} fontSize={0.3}>
+        <Text position={[0, 0, 0.5]} fontSize={0.3} color={theme.labelColor}>
           {value}
         </Text>
       )}
-    </mesh>
+    </group>
   );
 }

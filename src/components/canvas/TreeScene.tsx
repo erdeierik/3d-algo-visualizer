@@ -1,31 +1,43 @@
 import { useMemo } from 'react';
-import { Line } from '@react-three/drei';
 import { usePlayerStore } from '../../store/playerStore';
 import { computeTreeLayout } from '../../algorithms/tree/layout';
+import { useTheme } from '../../themes/registry';
 import { TreeNode3D } from './TreeNode3D';
 import type { TreeStep } from '../../algorithms/types';
+import type { Detail, VisualState } from '../../themes/types';
 
-const IDLE_COLOR = '#4a5568';
-
-const ACTIVE_COLOR: Record<TreeStep['kind'], string> = {
-  compare: '#ecc94b',
-  visit: '#ecc94b',
-  insert: '#48bb78',
-  found: '#48bb78',
-  delete: '#f56565',
-  'rebalance-pointer': '#f56565',
-  'not-found': IDLE_COLOR,
-  done: IDLE_COLOR,
+/** A terv 4.5 táblája: 8 lépésfajta → 4 vizuális állapot. */
+const ACTIVE_STATE: Record<TreeStep['kind'], VisualState> = {
+  compare: 'compare',
+  visit: 'compare',
+  insert: 'insert',
+  found: 'found',
+  delete: 'swap',
+  'rebalance-pointer': 'swap',
+  'not-found': 'idle',
+  done: 'idle',
 };
 
+const PLAIN_ABOVE = 20;
+
 export function TreeScene() {
+  const theme = useTheme();
   const steps = usePlayerStore((s) => s.steps) as TreeStep[];
   const currentStepIndex = usePlayerStore((s) => s.currentStepIndex);
   const step = steps[currentStepIndex];
 
-  const layout = useMemo(() => (step ? computeTreeLayout(step.nodes, step.rootId) : {}), [step]);
+  // a <Canvas> saját reconciler-gyökere miatt ez a komponens a playerStore-t a App-tól
+  // függetlenül olvashatja újra — algoritmusváltáskor egy képkockányira SortStep is becsúszhat
+  const isTreeStep = !!step && typeof step.nodes === 'object' && step.nodes !== null;
 
-  if (!step) return null;
+  const layout = useMemo(
+    () => (isTreeStep ? computeTreeLayout(step.nodes, step.rootId) : {}),
+    [step, isTreeStep],
+  );
+
+  if (!isTreeStep) return null;
+
+  const detail: Detail = Object.keys(step.nodes).length > PLAIN_ABOVE ? 'plain' : 'rich';
 
   return (
     <>
@@ -38,7 +50,8 @@ export function TreeScene() {
             value={node.value}
             targetX={pos.x}
             targetY={pos.y}
-            color={isActive ? ACTIVE_COLOR[step.kind] : IDLE_COLOR}
+            state={isActive ? ACTIVE_STATE[step.kind] : 'idle'}
+            detail={detail}
           />
         );
       })}
@@ -47,14 +60,7 @@ export function TreeScene() {
         return [node.leftId, node.rightId]
           .filter((id): id is string => id !== null)
           .map((childId) => (
-            <Line
-              key={`${node.id}-${childId}`}
-              points={[
-                [from.x, from.y, 0],
-                [layout[childId].x, layout[childId].y, 0],
-              ]}
-              color="#718096"
-            />
+            <theme.Edge key={`${node.id}-${childId}`} from={from} to={layout[childId]} />
           ));
       })}
     </>

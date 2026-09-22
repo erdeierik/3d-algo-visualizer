@@ -1,44 +1,47 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
-import type { Group, Mesh } from 'three';
+import { Color, type Group, type MeshStandardMaterial } from 'three';
 import { useSettingsStore } from '../../store/settingsStore';
+import { useTheme } from '../../themes/registry';
+import type { Detail, VisualState } from '../../themes/types';
+import { SPACING } from './contentBounds';
 
-const SPACING = 1.2;
 const LABEL_GAP = 0.3;
 
 interface SortBarProps {
   index: number;
   value: number;
   targetHeight: number;
-  color: string;
+  state: VisualState;
+  detail: Detail;
 }
 
-export function SortBar({ index, value, targetHeight, color }: SortBarProps) {
-  const meshRef = useRef<Mesh>(null);
-  const labelRef = useRef<Group>(null);
+export function SortBar({ index, value, targetHeight, state, detail }: SortBarProps) {
+  const theme = useTheme();
   const showLabels = useSettingsStore((s) => s.showLabels);
   const animate = useSettingsStore((s) => s.animate);
 
+  // a mai mesh.scale.y kezdőértéke 1 — a mount-beli látvány így marad azonos
+  const heightRef = useRef(1);
+  const materialRef = useRef<MeshStandardMaterial>(null);
+  const labelRef = useRef<Group>(null);
+
+  const target = useMemo(() => new Color(theme.palette[state]), [theme, state]);
+
   useFrame((_, delta) => {
-    if (!meshRef.current) return;
     const factor = animate ? Math.min(delta * 6, 1) : 1;
-    const current = meshRef.current.scale.y;
-    const next = current + (targetHeight - current) * factor;
-    meshRef.current.scale.y = next;
-    meshRef.current.position.y = next / 2;
-    if (labelRef.current) labelRef.current.position.y = next + LABEL_GAP;
-  });
+    heightRef.current += (targetHeight - heightRef.current) * factor;
+    materialRef.current?.color.copy(target);
+    if (labelRef.current) labelRef.current.position.y = heightRef.current + LABEL_GAP;
+  }, -1);
 
   return (
     <group position={[index * SPACING, 0, 0]}>
-      <mesh ref={meshRef}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color={color} />
-      </mesh>
+      <theme.Bar heightRef={heightRef} materialRef={materialRef} detail={detail} />
       {showLabels && (
         <group ref={labelRef}>
-          <Text fontSize={0.32} color="white" anchorX="center" anchorY="bottom">
+          <Text fontSize={0.32} color={theme.labelColor} anchorX="center" anchorY="bottom">
             {value}
           </Text>
         </group>

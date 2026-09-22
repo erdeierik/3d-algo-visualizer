@@ -2,15 +2,16 @@ import { useMemo } from 'react';
 import { usePlayerStore } from '../../store/playerStore';
 import { SortBar } from './SortBar';
 import type { SortStep } from '../../algorithms/types';
+import type { Detail, VisualState } from '../../themes/types';
+import { MAX_BAR_HEIGHT } from './contentBounds';
 
-const COLORS = {
-  idle: '#4a5568',
-  compare: '#ecc94b',
-  swap: '#f56565',
-  sorted: '#48bb78',
-};
+/** A LOD-küszöb a terv 6.2-ből; a végleges értéket a Fázis 11.5 FPS-mérése adja. */
+const PLAIN_ABOVE = 30;
 
-const MAX_BAR_HEIGHT = 6;
+function barState(step: SortStep, index: number, sortedIndices: Set<number>): VisualState {
+  if (step.activeIndices.includes(index)) return step.kind === 'swap' ? 'swap' : 'compare';
+  return sortedIndices.has(index) || step.kind === 'done' ? 'sorted' : 'idle';
+}
 
 export function SortingScene() {
   const steps = usePlayerStore((s) => s.steps) as SortStep[];
@@ -27,31 +28,25 @@ export function SortingScene() {
     return acc;
   }, [steps, currentStepIndex]);
 
-  if (!step) return null;
+  // a <Canvas> saját reconciler-gyökere miatt ez a komponens a playerStore-t a App-tól
+  // függetlenül olvashatja újra — algoritmusváltáskor egy képkockányira TreeStep is becsúszhat
+  if (!step || !Array.isArray(step.array)) return null;
 
   const maxValue = Math.max(...step.array);
+  const detail: Detail = step.array.length > PLAIN_ABOVE ? 'plain' : 'rich';
 
   return (
     <>
-      {step.array.map((value, index) => {
-        const isActive = step.activeIndices.includes(index);
-        const color = isActive
-          ? step.kind === 'swap'
-            ? COLORS.swap
-            : COLORS.compare
-          : sortedIndices.has(index) || step.kind === 'done'
-            ? COLORS.sorted
-            : COLORS.idle;
-        return (
-          <SortBar
-            key={index}
-            index={index}
-            value={value}
-            targetHeight={(value / maxValue) * MAX_BAR_HEIGHT}
-            color={color}
-          />
-        );
-      })}
+      {step.array.map((value, index) => (
+        <SortBar
+          key={index}
+          index={index}
+          value={value}
+          targetHeight={(value / maxValue) * MAX_BAR_HEIGHT}
+          state={barState(step, index, sortedIndices)}
+          detail={detail}
+        />
+      ))}
     </>
   );
 }
