@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, type CSSProperties } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { CameraRig, type CameraRigHandle } from './components/canvas/CameraRig';
 import { computeContentBounds } from './components/canvas/contentBounds';
@@ -35,9 +35,15 @@ function App() {
 
   const bounds = useMemo(() => computeContentBounds(steps, category), [steps, category]);
   const offsetY = theme.contentOffsetY(bounds);
+  // a téma HUD-segítsége CSS-változóként — a zónák és a sötétítő réteg innen öröklik
+  const hudVars = {
+    '--hud-shade-top': theme.hud.shadeTop,
+    '--hud-shade-bottom': theme.hud.shadeBottom,
+    '--hud-halo': theme.hud.halo,
+  } as CSSProperties;
 
   return (
-    <div className={styles.stage}>
+    <div className={styles.stage} style={hudVars}>
       <Canvas camera={{ position: [0, 4, 10], fov: 50 }}>
         <theme.Environment quality={quality} bounds={bounds} category={category} />
         <CameraRig ref={cameraRigRef} bounds={bounds} offsetY={offsetY} />
@@ -45,6 +51,8 @@ function App() {
           {category === 'tree' ? <TreeScene /> : <SortingScene />}
         </group>
       </Canvas>
+
+      <div className={styles.hudShade} aria-hidden />
 
       <div className={styles.zoneTopLeft}>
         <AlgorithmSelector />

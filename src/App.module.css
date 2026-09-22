@@ -4,6 +4,20 @@
   height: 100%;
 }
 
+/*
+ * Él-sötétítés a keret nélküli zónák mögött. Nem panel: nincs éle, nincs hairline-ja, így a
+ * fazis-5-design.md 1.2 "két súlyú chrome" szabálya érvényben marad. Sötét témában
+ * (--hud-shade-*: transparent) mindkét gradiens teljesen átlátszó.
+ */
+.hudShade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 80% at 0 0, var(--hud-shade-top), transparent),
+    linear-gradient(to top, var(--hud-shade-bottom) 0%, transparent 22%);
+}
+
 .zoneTopLeft {
   position: absolute;
   top: 30px;
@@ -11,6 +25,7 @@
   display: flex;
   flex-direction: column;
   gap: 27px;
+  text-shadow: var(--hud-halo);
 }
 
 .zoneTopRight {
@@ -32,6 +47,7 @@
   bottom: 36px;
   left: 50%;
   transform: translateX(-50%);
+  text-shadow: var(--hud-halo);
 }
 
 .zoneBottomRight {
@@ -49,6 +65,7 @@
   letter-spacing: 0.08em;
   color: var(--color-text-secondary);
   cursor: pointer;
+  text-shadow: var(--hud-halo);
 }
 
 .resetView:hover {

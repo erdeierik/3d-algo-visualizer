@@ -11,6 +11,10 @@
   --color-hairline: rgba(226, 232, 240, 0.18);
   --color-scrim: rgba(15, 17, 21, 0.72);
   --blur-panel: 10px;
+  /* a téma írja felül a .stage-en (App.tsx); ezek a semleges alapértékek */
+  --hud-shade-top: transparent;
+  --hud-shade-bottom: transparent;
+  --hud-halo: none;
 
   --font-mono: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
