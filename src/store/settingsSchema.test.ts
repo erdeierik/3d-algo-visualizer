@@ -14,8 +14,8 @@ function stored(fields: Record<string, unknown>): string {
 }
 
 describe('defaultSettings', () => {
-  it('a theme alapértéke simple (a cosmos csak a Fázis 11-ben létezik)', () => {
-    expect(DEFAULTS.theme).toBe('simple');
+  it('a theme alapértéke cosmos (a Fázis 11 zárásának korrekciója)', () => {
+    expect(DEFAULTS.theme).toBe('cosmos');
   });
 
   it('az animate alapértéke a prefers-reduced-motion inverze', () => {

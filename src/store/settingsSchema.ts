@@ -12,9 +12,9 @@ export interface Settings {
   quality: Quality;
 }
 
-/** A theme alapértéke a Fázis 11 zárásáig 'simple' — a 'cosmos' addig nem létezik. */
+/** A Fázis 11 zárásával a 'cosmos' lett az alapértelmezett téma (05-feladatok-v2.md 9.2). */
 const BASE_DEFAULTS: Settings = {
-  theme: 'simple',
+  theme: 'cosmos',
   volume: 0.7,
   muted: false,
   showLabels: true,
