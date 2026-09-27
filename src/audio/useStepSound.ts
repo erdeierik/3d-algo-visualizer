@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { usePlayerStore } from '../store/playerStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { playStepSound, setMasterLevel } from './engine';
+import { pickSoundStep } from './pickSoundStep';
 
 /**
  * A hang egyetlen React-kapcsolódási pontja. Mindkét feliratkozás ZUSTAND TRANZIENS
@@ -23,7 +24,8 @@ export function useStepSound(): void {
       if (state.steps !== prev.steps) return; // új adat betöltése: néma
       if (state.currentStepIndex <= prev.currentStepIndex) return; // stepBack / reset: néma
 
-      const step = state.steps[state.currentStepIndex];
+      // összevont képkockában több lépés is lefuthatott: a legfontosabb szóljon (fazis-12 3.4)
+      const step = pickSoundStep(state.steps, prev.currentStepIndex, state.currentStepIndex);
       if (step) playStepSound(step.kind);
     });
   }, []);

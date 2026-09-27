@@ -1,6 +1,7 @@
 import { usePlayerStore } from '../../store/playerStore';
 import { unlockAudio } from '../../audio/engine';
 import styles from './PlaybackControls.module.css';
+import { SLIDER_MAX, toPosition, toSpeed } from './speedScale';
 
 export function PlaybackControls() {
   const isPlaying = usePlayerStore((s) => s.isPlaying);
@@ -47,13 +48,13 @@ export function PlaybackControls() {
         <input
           className={styles.slider}
           type="range"
-          min={0.5}
-          max={10}
-          step={0.5}
-          value={speed}
-          onChange={(e) => usePlayerStore.getState().setSpeed(Number(e.target.value))}
+          min={0}
+          max={SLIDER_MAX}
+          step={1}
+          value={toPosition(speed)}
+          onChange={(e) => usePlayerStore.getState().setSpeed(toSpeed(Number(e.target.value)))}
         />
-        <span>{speed}×</span>
+        <span className={styles.speedValue}>{speed}×</span>
       </label>
     </div>
   );

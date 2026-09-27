@@ -1,6 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { usePlayerStore } from './playerStore';
+import { MANUAL_TWEEN_MS, tweenMsFor, usePlayerStore } from './playerStore';
 import type { Step } from '../algorithms/types';
+
+/**
+ * Node-ban a lejátszó setTimeout(16)-os „képkockákkal" fut (playerStore.ts tartaléka). Az első
+ * tick csak az órát indítja, és a lépés csak képkocka-határon jön, ezért az első lépésre két
+ * képkockányi ráhagyás kell.
+ */
+const FRAME = 16;
+const FIRST_STEP_SLACK = 2 * FRAME;
 
 function makeSteps(count: number): Step[] {
   return Array.from({ length: count }, (_, i) => ({
@@ -16,7 +24,7 @@ function makeSteps(count: number): Step[] {
 beforeEach(() => {
   vi.useFakeTimers();
   usePlayerStore.getState().pause();
-  usePlayerStore.setState({ steps: [], currentStepIndex: 0, isPlaying: false, speed: 2 });
+  usePlayerStore.setState({ steps: [], currentStepIndex: 0, isPlaying: false, speed: 2, tweenMs: MANUAL_TWEEN_MS });
 });
 
 afterEach(() => {
@@ -70,7 +78,10 @@ describe('usePlayerStore', () => {
     usePlayerStore.getState().play();
     expect(usePlayerStore.getState().isPlaying).toBe(true);
 
-    vi.advanceTimersByTime(500); // speed=2 -> 500ms/lépés
+    vi.advanceTimersByTime(500 - FRAME); // speed=2 -> 500ms/lépés, de még nem telt el
+    expect(usePlayerStore.getState().currentStepIndex).toBe(0);
+
+    vi.advanceTimersByTime(FRAME + FIRST_STEP_SLACK);
     expect(usePlayerStore.getState().currentStepIndex).toBe(1);
     expect(usePlayerStore.getState().isPlaying).toBe(true);
 
@@ -85,7 +96,7 @@ describe('usePlayerStore', () => {
   it('pause() leállítja az automatikus léptetést', () => {
     usePlayerStore.getState().loadSteps(makeSteps(5));
     usePlayerStore.getState().play();
-    vi.advanceTimersByTime(500);
+    vi.advanceTimersByTime(500 + FIRST_STEP_SLACK);
     expect(usePlayerStore.getState().currentStepIndex).toBe(1);
 
     usePlayerStore.getState().pause();
@@ -94,21 +105,72 @@ describe('usePlayerStore', () => {
     expect(usePlayerStore.getState().isPlaying).toBe(false);
   });
 
-  it('setSpeed lejátszás közben az új tempóval folytat', () => {
+  it('setSpeed lejátszás közben az új tempóval folytat, újraindítás nélkül', () => {
     usePlayerStore.getState().loadSteps(makeSteps(5));
     usePlayerStore.getState().play();
     usePlayerStore.getState().setSpeed(10); // 100ms/lépés
 
-    vi.advanceTimersByTime(100);
+    vi.advanceTimersByTime(100 + FIRST_STEP_SLACK);
     expect(usePlayerStore.getState().currentStepIndex).toBe(1);
     vi.advanceTimersByTime(100);
     expect(usePlayerStore.getState().currentStepIndex).toBe(2);
   });
 
+  it('100×-on egy képkocka több lépést is léptet, egyetlen store-frissítéssel', () => {
+    usePlayerStore.getState().loadSteps(makeSteps(50));
+    usePlayerStore.getState().setSpeed(100); // 10ms/lépés
+    usePlayerStore.getState().play();
+    vi.advanceTimersByTime(FRAME); // első tick: csak az óra indul
+
+    let updates = 0;
+    const unsubscribe = usePlayerStore.subscribe(() => updates++);
+
+    vi.advanceTimersByTime(FRAME); // 16 ms → 1 lépés, 6 ms marad
+    expect(usePlayerStore.getState().currentStepIndex).toBe(1);
+    expect(updates).toBe(1);
+
+    vi.advanceTimersByTime(FRAME); // 22 ms → 2 lépés egyszerre
+    expect(usePlayerStore.getState().currentStepIndex).toBe(3);
+    expect(updates).toBe(2);
+
+    unsubscribe();
+  });
+
+  it('hosszú kimaradás után legfeljebb MAX_FRAME_MS-nyi lépést pótol', () => {
+    usePlayerStore.getState().loadSteps(makeSteps(100));
+    usePlayerStore.getState().setSpeed(10); // 100ms/lépés
+    usePlayerStore.getState().play();
+    vi.advanceTimersByTime(FRAME);
+
+    vi.setSystemTime(Date.now() + 5000); // háttérfül: 5 s képkocka nélkül
+    vi.advanceTimersByTime(FRAME);
+    // 5 s-nyi (50) lépés helyett a 250 ms-os korlát szerint legfeljebb 2–3
+    expect(usePlayerStore.getState().currentStepIndex).toBeLessThanOrEqual(3);
+    expect(usePlayerStore.getState().currentStepIndex).toBeGreaterThan(0);
+  });
+
+  it('tweenMsFor: az intervallum 75%-a, legfeljebb 400 ms', () => {
+    expect(tweenMsFor(0.5)).toBe(400);
+    expect(tweenMsFor(2)).toBe(375);
+    expect(tweenMsFor(10)).toBe(75);
+    expect(tweenMsFor(100)).toBe(7.5);
+  });
+
+  it('automatikus lépés után a tweenMs a sebességből jön, kézi lépés után 300 ms', () => {
+    usePlayerStore.getState().loadSteps(makeSteps(10));
+    usePlayerStore.getState().setSpeed(10);
+    usePlayerStore.getState().play();
+    vi.advanceTimersByTime(100 + FIRST_STEP_SLACK);
+    expect(usePlayerStore.getState().tweenMs).toBe(tweenMsFor(10));
+
+    usePlayerStore.getState().stepForward();
+    expect(usePlayerStore.getState().tweenMs).toBe(MANUAL_TWEEN_MS);
+  });
+
   it('reset visszaállítja az indexet és leállítja a lejátszást', () => {
     usePlayerStore.getState().loadSteps(makeSteps(3));
     usePlayerStore.getState().play();
-    vi.advanceTimersByTime(500);
+    vi.advanceTimersByTime(500 + FIRST_STEP_SLACK);
     usePlayerStore.getState().reset();
     expect(usePlayerStore.getState().currentStepIndex).toBe(0);
     expect(usePlayerStore.getState().isPlaying).toBe(false);

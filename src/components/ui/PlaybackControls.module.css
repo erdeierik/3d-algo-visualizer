@@ -34,6 +34,12 @@
   color: var(--color-text-secondary);
 }
 
+/* a 100× egy karakterrel hosszabb a 10×-nél: fix szélesség, hogy a sáv ne ugráljon */
+.speedValue {
+  min-width: 5ch;
+  font-variant-numeric: tabular-nums;
+}
+
 .slider {
   composes: slider from '../../styles/slider.module.css';
   width: 180px;
